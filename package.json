@@ -19,7 +19,6 @@
   },
   "relatedPackages": {},
   "dependencies": {
-    "com.unity.modules.unitywebrequest": "1.0.0",
-    "com.unity.modules.unitywebrequestwww": "1.0.0"
+    "com.novaframework.unity.book": "https://github.com/yoseasoft/com.novaframework.unity.book.git#1.0.0"
   }
 }
