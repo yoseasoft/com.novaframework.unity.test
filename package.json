@@ -19,6 +19,6 @@
   },
   "relatedPackages": {},
   "dependencies": {
-    "com.novaframework.unity.book": "https://github.com/yoseasoft/com.novaframework.unity.book.git#1.0.0"
+    "com.novaframework.unity.book": "1.0.0"
   }
 }
