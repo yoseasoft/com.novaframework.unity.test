@@ -19,12 +19,14 @@ public class PackageInstallerLauncher
         },
     };
     
+    private static string _markerPath = Path.Combine(Application.dataPath, "Temp", "PackageInstallerExecuted.marker");
+    
     [InitializeOnLoadMethod]
     static void OnProjectLoadedInEditor()
     {
         // 检查是否已经执行过，避免重复执行
-        string markerPath = Path.Combine(Application.dataPath, "Temp", "PackageInstallerExecuted.marker");
-        if (!File.Exists(markerPath))
+        
+        if (!File.Exists(_markerPath))
         {
             // 确保 Temp 目录存在
             string tempDir = Path.Combine(Application.dataPath, "Temp");
@@ -33,7 +35,7 @@ public class PackageInstallerLauncher
                 Directory.CreateDirectory(tempDir);
             }
             
-            File.WriteAllText(markerPath, "executed");
+            File.WriteAllText(_markerPath, "executed");
             EditorApplication.delayCall += ExecuteInstallation;
         }
     }
@@ -150,7 +152,7 @@ public class PackageInstallerLauncher
                     int insertPosition = jsonContent.IndexOf('\n', openingBrace + 1);
                     if (insertPosition == -1) insertPosition = openingBrace + 1;
 
-                    string newEntry = $"    \"{packageName}\": \"file:./../NovaFrameworkData/framework_repo/{packageName}\"\n";
+                    string newEntry = $"\n    \"{packageName}\": \"file:./../NovaFrameworkData/framework_repo/{packageName}\",";
                     string updatedJson = jsonContent.Insert(insertPosition, newEntry);
                     
                     File.WriteAllText(manifestPath, updatedJson);
@@ -173,6 +175,11 @@ public class PackageInstallerLauncher
         {
             // 使用 PackageManager 移除自身
             Client.Remove("com.yoseasoft.nova.main.installer");
+            
+            if (File.Exists(_markerPath))
+            {
+                File.Delete(_markerPath);
+            }
             Debug.Log("Successfully removed self: com.yoseasoft.nova.main.installer");
         }
         catch (Exception e)
