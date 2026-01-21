@@ -20,6 +20,8 @@ public class PackageInstallerLauncher
     };
     
     private static string _markerPath = Path.Combine(Application.dataPath, "Temp", "PackageInstallerExecuted.marker");
+
+    private static string _launcherPackageName = "com.novaframework.unity.test.git";
     
     [InitializeOnLoadMethod]
     static void OnProjectLoadedInEditor()
@@ -173,14 +175,14 @@ public class PackageInstallerLauncher
     {
         try
         {
-            // 使用 PackageManager 移除自身
-            Client.Remove("com.yoseasoft.nova.main.installer");
-            
             if (File.Exists(_markerPath))
             {
                 File.Delete(_markerPath);
             }
-            Debug.Log("Successfully removed self: com.yoseasoft.nova.main.installer");
+            
+            // 使用 PackageManager 移除自身
+            Client.Remove(_launcherPackageName);
+            Debug.Log($"Successfully removed self: {_launcherPackageName}");
         }
         catch (Exception e)
         {
