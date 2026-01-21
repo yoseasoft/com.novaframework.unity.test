@@ -33,17 +33,6 @@ namespace CoreEngine.Editor.Installer
     {
         [SerializeField] public List<PackageInfo> selectedPackages = new List<PackageInfo>();
         [SerializeField] public List<AssemblyDefinitionConfig> assemblyConfigs = new List<AssemblyDefinitionConfig>();
-
-        [SerializeField] public string projectResourcesPath = "Assets/Resources";
-        
-        // 环境目录配置
-        [SerializeField] public string originalResourcePath = "Assets/_Resources";
-        [SerializeField] public string sourceCodePath = "Assets/Sources";
-        [SerializeField] public string aotLibraryPath = "Assets/_Resources/Aot";
-        [SerializeField] public string linkLibraryPath = "Assets/_Resources/Code";
-        [SerializeField] public string contextPath = "Assets/_Resources/Context";
-        [SerializeField] public string configPath = "Assets/_Resources/Config";
-        
         
         // 添加方法来操作配置
         public void AddAssemblyConfig(AssemblyDefinitionConfig config)

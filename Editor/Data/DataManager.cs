@@ -88,10 +88,10 @@ namespace CoreEngine.Editor.Installer
             var jsonEntries = new List<SystemVariableEntry>();
             foreach (var kvp in variables)
             {
-                jsonEntries.Add(new SystemVariableEntry { key = kvp.Key, path = kvp.Value });
+                jsonEntries.Add(new SystemVariableEntry { _key = kvp.Key, _path = kvp.Value });
             }
             
-            string json = JsonUtility.ToJson(new SystemVariablesContainer { entries = jsonEntries }, true);
+            string json = JsonUtility.ToJson(new SystemVariablesContainer { _entries = jsonEntries }, true);
             
             string directory = Path.GetDirectoryName(SystemVariablesPath);
             if (!Directory.Exists(directory))
@@ -116,11 +116,11 @@ namespace CoreEngine.Editor.Installer
             var container = JsonUtility.FromJson<SystemVariablesContainer>(json);
             
             var variables = new Dictionary<string, string>();
-            if (container.entries != null)
+            if (container._entries != null)
             {
-                foreach (var entry in container.entries)
+                foreach (var entry in container._entries)
                 {
-                    variables[entry.key] = entry.path;
+                    variables[entry._key] = entry._path;
                 }
             }
             
@@ -130,20 +130,25 @@ namespace CoreEngine.Editor.Installer
         // 获取默认系统变量
         public static Dictionary<string, string> GetDefaultSystemVariables()
         {
-            var variables = new Dictionary<string, string>
+            var variables = new Dictionary<string, string>();
+            
+            // 从PackageManager获取系统路径信息
+            PackageManager.LoadData();
+            var systemPathInfos = PackageManager.SystemPathInfos;
+            
+            // 使用系统路径信息中的默认值
+            foreach (var pathInfo in systemPathInfos)
             {
-                { "ORIGINAL_RESOURCE_PATH", Constants.ORIGINAL_RESOURCE_PATH },
-                { "SOURCE_CODE_PATH", Constants.SOURCE_CODE_PATH },
-                { "AOT_LIBRARY_PATH", Constants.AOT_LIBRARY_PATH },
-                { "LINK_LIBRARY_PATH", Constants.LINK_LIBRARY_PATH }
-            };
+                variables[pathInfo.name] = pathInfo.defaultValue;
+            }
+            
             return variables;
         }
         
         // 保存程序集配置
         public static void SaveAssemblyConfig(List<AssemblyDefinitionConfig> configs)
         {
-            var configData = new AssemblyConfigDataWrapper { assemblyConfigs = configs };
+            var configData = new AssemblyConfigDataWrapper { _assemblyConfigs = configs };
             string json = JsonUtility.ToJson(configData, true);
             
             string directory = Path.GetDirectoryName(AssemblyConfigPath);
@@ -161,8 +166,6 @@ namespace CoreEngine.Editor.Installer
         {
             // 检测是否有AssemblyConfig.json文件，如果有就按这个json加载，没有的话返回空列表让系统生成新的
             string primaryPath = AssemblyConfigPath; // Assets/Resources/AssemblyConfig.json
-            string fallbackPath = "Assets/Editor/FrameworkInstaller/Configs/AssemblyConfig.json"; // 备用路径
-            
             string configPath = null;
             
             // 优先检查主要路径
@@ -170,11 +173,7 @@ namespace CoreEngine.Editor.Installer
             {
                 configPath = primaryPath;
             }
-            // 如果主要路径不存在，检查备用路径
-            else if (File.Exists(fallbackPath))
-            {
-                configPath = fallbackPath;
-            }
+            
             
             if (configPath != null)
             {
@@ -182,7 +181,7 @@ namespace CoreEngine.Editor.Installer
                 {
                     string json = File.ReadAllText(configPath);
                     var wrapper = JsonUtility.FromJson<AssemblyConfigDataWrapper>(json);
-                    return wrapper.assemblyConfigs ?? new List<AssemblyDefinitionConfig>();
+                    return wrapper._assemblyConfigs ?? new List<AssemblyDefinitionConfig>();
                 }
                 catch (Exception ex)
                 {
@@ -205,20 +204,20 @@ namespace CoreEngine.Editor.Installer
         [Serializable]
         private class SystemVariablesContainer
         {
-            public List<SystemVariableEntry> entries = new List<SystemVariableEntry>();
+            public List<SystemVariableEntry> _entries = new List<SystemVariableEntry>();
         }
         
         [Serializable]
         private class SystemVariableEntry
         {
-            public string key;
-            public string path;
+            public string _key;
+            public string _path;
         }
         
         [Serializable]
         private class AssemblyConfigDataWrapper
         {
-            public List<AssemblyDefinitionConfig> assemblyConfigs = new List<AssemblyDefinitionConfig>();
+            public List<AssemblyDefinitionConfig> _assemblyConfigs = new List<AssemblyDefinitionConfig>();
         }
     }
 }

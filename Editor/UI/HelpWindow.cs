@@ -35,20 +35,20 @@ namespace CoreEngine.Editor.Installer
 {
     public class HelpWindow : EditorWindow
     {
-        private static HelpWindow window;
-        private Vector2 scrollPosition;
+        private static HelpWindow _window;
+        private Vector2 _scrollPosition;
         
         public static void ShowWindow()
         {
-            window = (HelpWindow)EditorWindow.GetWindow(typeof(HelpWindow));
-            window.titleContent = new GUIContent("框架安装器 - 使用指南");
-            window.minSize = new Vector2(700, 500);
-            window.Show();
+            _window = (HelpWindow)EditorWindow.GetWindow(typeof(HelpWindow));
+            _window.titleContent = new GUIContent("框架安装器 - 使用指南");
+            _window.minSize = new Vector2(700, 500);
+            _window.Show();
         }
         
         void OnGUI()
         {
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
             
             GUILayout.Label("框架安装器 - 使用指南", new GUIStyle(EditorStyles.boldLabel) { fontSize = 16 });
             EditorGUILayout.Space(10);

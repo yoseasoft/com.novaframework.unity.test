@@ -24,7 +24,6 @@
 
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CoreEngine.Editor.Installer
 {
@@ -34,22 +33,5 @@ namespace CoreEngine.Editor.Installer
         public string name = "Nova.Library";
         public int order = 1;
         public List<string> tagNames = new List<string>(); // 使用字符串列表代替枚举
-        public int tagMask = 0; // 位标志掩码，用于存储标签的位标志值
-    }
-    
-    // 用于JSON序列化/反序列化的简单类，避免跨目录引用问题
-    [Serializable]
-    public class SimpleAssemblyConfigData
-    {
-        public List<SimpleAssemblyDefinitionConfig> assemblyConfigs = new List<SimpleAssemblyDefinitionConfig>();
-    }
-    
-    [Serializable]
-    public class SimpleAssemblyDefinitionConfig
-    {
-        public string name;
-        public int order;
-        public List<string> tagNames = new List<string>();
-        public int tagMask = 0;
     }
 }

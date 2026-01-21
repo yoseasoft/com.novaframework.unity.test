@@ -66,5 +66,11 @@ namespace CoreEngine.Editor.Installer
         {
             AutoInstallManager.ShowHelpWindow();
         }
+        
+        [MenuItem("Tools/查找到Zip", priority = 7)]
+        public static void FindZipFile()
+        {
+            AutoInstallManager.FindUIZipFile();
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,6 +27,7 @@ namespace CoreEngine.Editor.Installer
         public bool isRequired = false;
     }
     
+    [Serializable]
     public class AssemblyDefinitionInfo
     {
         public string name;
@@ -33,7 +35,7 @@ namespace CoreEngine.Editor.Installer
         public List<string> loadableStrategies = new List<string>();
     }
     
-    
+    [Serializable]
     public class PackageInfo
     {
         public string name;

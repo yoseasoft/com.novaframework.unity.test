@@ -34,28 +34,28 @@ namespace CoreEngine.Editor.Installer
 {
     public class ConfigurationWindow : EditorWindow
     {
-        private static ConfigurationWindow window;
+        private static ConfigurationWindow _window;
         
-        private int selectedTab = 0;
-        private string[] tabNames = { "插件配置", "环境目录配置", "程序集配置" };
+        private int _selectedTab = 0;
+        private string[] _tabNames = { "插件配置", "环境目录配置", "程序集配置" };
         
         private PackageConfigurationView _packageView;
-        private DirectoryConfigurationView directoryView;
-        private AssemblyConfigurationView assemblyView;
+        private DirectoryConfigurationView _directoryView;
+        private AssemblyConfigurationView _assemblyView;
         
         public static void ShowWindow()
         {
-            window = (ConfigurationWindow)EditorWindow.GetWindow(typeof(ConfigurationWindow));
-            window.titleContent = new GUIContent("框架配置中心");
-            window.minSize = new Vector2(800, 700);
-            window.Show();
+            _window = (ConfigurationWindow)EditorWindow.GetWindow(typeof(ConfigurationWindow));
+            _window.titleContent = new GUIContent("框架配置中心");
+            _window.minSize = new Vector2(800, 700);
+            _window.Show();
         }
         
         void OnEnable()
         {
             _packageView = new PackageConfigurationView();
-            directoryView = new DirectoryConfigurationView();
-            assemblyView = new AssemblyConfigurationView();
+            _directoryView = new DirectoryConfigurationView();
+            _assemblyView = new AssemblyConfigurationView();
         }
         
         void OnGUI()
@@ -71,20 +71,20 @@ namespace CoreEngine.Editor.Installer
             GUIStyle tabStyle = new GUIStyle(GUI.skin.button);
             tabStyle.fontSize = 16;
             tabStyle.fixedHeight = 35;
-            selectedTab = GUILayout.Toolbar(selectedTab, tabNames, tabStyle);
+            _selectedTab = GUILayout.Toolbar(_selectedTab, _tabNames, tabStyle);
             EditorGUILayout.Space(10);
             
             // 根据选中的标签页显示不同内容
-            switch (selectedTab)
+            switch (_selectedTab)
             {
                 case 0:
                     _packageView.DrawView();
                     break;
                 case 1:
-                    directoryView.DrawView();
+                    _directoryView.DrawView();
                     break;
                 case 2:
-                    assemblyView.DrawView();
+                    _assemblyView.DrawView();
                     break;
             }
 

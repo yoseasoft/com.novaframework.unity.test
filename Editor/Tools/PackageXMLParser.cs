@@ -51,14 +51,13 @@ namespace CoreEngine.Editor.Installer
                 string xmlContent = System.IO.File.ReadAllText(xmlPath);
                 
                 // 解析变量定义
-                Dictionary<string, string> variables = ParseVariables(xmlContent);
-                _packageXMLInfo.environmentVariables = variables;
+                ParseEnvironmentVariables(xmlContent);
                 
                 // 解析系统路径定义
                 ParseSystemPaths(xmlContent);
                 
                 // 替换变量
-                foreach (var variable in variables)
+                foreach (var variable in _packageXMLInfo.environmentVariables)
                 {
                     xmlContent = xmlContent.Replace($"%{variable.Key}%", variable.Value);
                 }
@@ -364,6 +363,38 @@ namespace CoreEngine.Editor.Installer
             catch (Exception e)
             {
                 Debug.LogError($"解析系统路径时出错: {e.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// 解析XML中的环境变量定义
+        /// </summary>
+        /// <param name="xmlContent">XML内容</param>
+        private static void ParseEnvironmentVariables(string xmlContent)
+        {
+            try
+            {
+                XmlDocument tempDoc = new XmlDocument();
+                tempDoc.LoadXml(xmlContent);
+                
+                XmlNodeList envVarNodes = tempDoc.SelectNodes("//environment-variable[@name and @value]");
+                
+                foreach (XmlNode envVarNode in envVarNodes)
+                {
+                    string name = envVarNode.Attributes["name"]?.Value ?? "";
+                    string value = envVarNode.Attributes["value"]?.Value ?? "";
+                    
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        _packageXMLInfo.environmentVariables.Add(name, value);
+                        
+                        Debug.Log($"解析环境变量: {name} = {value}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"解析环境变量时出错: {e.Message}");
             }
         }
     }

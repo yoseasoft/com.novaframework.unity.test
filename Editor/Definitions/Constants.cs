@@ -22,7 +22,7 @@
 /// THE SOFTWARE.
 /// -------------------------------------------------------------------------------
 
-using System;
+using System.IO;
 using UnityEngine;
 
 namespace CoreEngine.Editor.Installer
@@ -32,24 +32,43 @@ namespace CoreEngine.Editor.Installer
     /// </summary>
     public static class Constants
     {
-        // 公共路径常量
-        public const string GAME_CONFIGS_ROOT = "Assets/GameConfigs/";
+
+        // 默认资源路径
+        private const string DEFAULT_ROOT_PATH1 = "Assets/Editor/FrameworkInstaller/Editor Default Resources";
+        private const string DEFAULT_ROOT_PATH2 = "./NovaFrameworkData/framework_repo/com.novaframework.unity.installer/Editor Default Resources";
+       
+        public static string DEFAULT_RESOURCES_ROOT_PATH
+        {
+            get
+            {
+                if (Directory.Exists(DEFAULT_ROOT_PATH1))
+                {
+                    return  DEFAULT_ROOT_PATH1;
+                }
+                else
+                {
+                    return DEFAULT_ROOT_PATH2;
+                }
+                
+            }
+        }
         
         // 配置文件路径常量
-        public const string FRAMEWORK_SETTING_PATH = "Assets/Editor/FrameworkInstaller/Editor Default Resources/Config/FrameworkSetting.asset";
-        public const string ASSEMBLY_CONFIG_PATH = "Assets/Resources/AssemblyConfig.json"; // 修改为JSON路径
-        public const string PROJECT_CONFIG_PATH = GAME_CONFIGS_ROOT + "ProjectConfig.asset";
-        public const string REPO_MANIFEST_PATH = "Assets/Editor/FrameworkInstaller/Editor Default Resources/Config/repo_manifest.xml";
-        public const string SAVE_PACKAGE_RELATIVE_PATH = "NovaFrameworkData/framework_repo";
-        public static readonly string FRAMEWORK_REPO_PATH = Application.dataPath + "/../" + SAVE_PACKAGE_RELATIVE_PATH;
+        public static readonly string FRAMEWORK_SETTING_PATH = Path.Combine(DEFAULT_RESOURCES_ROOT_PATH, "Config/FrameworkSetting.asset");
+
+        public static readonly string REPO_MANIFEST_PATH = Path.Combine(DEFAULT_RESOURCES_ROOT_PATH, "Config/repo_manifest.xml");
         
+        // 程序配置路径常量
+        public static readonly string ASSEMBLY_CONFIG_PATH = "Assets/Resources/AssemblyConfig.json"; 
         // 系统变量配置路径
-        public const string SYSTEM_VARIABLES_PATH = "Assets/Resources/SystemVariables.json";
+        public static readonly string SYSTEM_VARIABLES_PATH = "Assets/Resources/SystemVariables.json";
         
-        // 默认系统变量路径常量
-        public const string ORIGINAL_RESOURCE_PATH = "Assets/_Resources";
-        public const string SOURCE_CODE_PATH = "Assets/Sources";
-        public const string AOT_LIBRARY_PATH = "Assets/_Resources/Aot";
-        public const string LINK_LIBRARY_PATH = "Assets/_Resources/Code";
+        // UI ZIP文件路径常量
+        public static readonly string GAME_ZIP_PATH = Path.Combine(DEFAULT_RESOURCES_ROOT_PATH, "BasePack/Game.zip");
+        
+        public const string SAVE_PACKAGE_RELATIVE_PATH = "NovaFrameworkData/framework_repo";
+        public static readonly string FRAMEWORK_REPO_PATH = Path.Combine(Path.GetDirectoryName(Application.dataPath), SAVE_PACKAGE_RELATIVE_PATH);
+        
+      
     }
 }

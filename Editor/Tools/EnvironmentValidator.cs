@@ -310,8 +310,8 @@ namespace CoreEngine.Editor.Installer
             ValidationResult result = ValidateEnvironment();
             
             // 创建验证结果窗口
-            ValidationResultsWindow window = (ValidationResultsWindow)EditorWindow.GetWindowWithRect(typeof(ValidationResultsWindow), new Rect(100, 100, 700, 500));
-            window.titleContent = new GUIContent("环境验证结果");
+            ValidationResultsWindow window = (ValidationResultsWindow)EditorWindow.GetWindow<ValidationResultsWindow>(false, "环境验证结果", true);
+            window.position = new Rect(100, 100, 700, 500);
             window.SetValidationResult(result);
             window.Show();
         }
@@ -365,19 +365,19 @@ namespace CoreEngine.Editor.Installer
     }
     
     // 验证结果窗口
-    public class ValidationResultsWindow : EditorWindow
+    internal class ValidationResultsWindow : EditorWindow
     {
-        private ValidationResult validationResult;
-        private Vector2 scrollPosition;
+        private ValidationResult _validationResult;
+        private Vector2 _scrollPosition;
         
         public void SetValidationResult(ValidationResult result)
         {
-            this.validationResult = result;
+            this._validationResult = result;
         }
         
         void OnGUI()
         {
-            if (validationResult == null)
+            if (_validationResult == null)
             {
                 GUILayout.Label("验证结果为空");
                 return;
@@ -389,21 +389,21 @@ namespace CoreEngine.Editor.Installer
             // 显示总体状态
             GUIStyle statusStyle = new GUIStyle(EditorStyles.label);
             statusStyle.fontSize = 14;
-            statusStyle.normal.textColor = validationResult.IsValid ? Color.green : Color.red;
+            statusStyle.normal.textColor = _validationResult.IsValid ? Color.green : Color.red;
             
-            string overallStatus = validationResult.IsValid ? "✓ 验证通过" : "✗ 验证未通过";
+            string overallStatus = _validationResult.IsValid ? "✓ 验证通过" : "✗ 验证未通过";
             GUILayout.Label($"整体状态: {overallStatus}", statusStyle);
             EditorGUILayout.Space(10);
             
             // 创建滚动视图来显示详细信息
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
             
             // 显示各个验证项的详细结果
-            DisplayValidationItem(validationResult.CheckPackages, "包安装");
-            DisplayValidationItem(validationResult.CheckDirectories, "目录结构");
-            DisplayValidationItem(validationResult.CheckConfigFiles, "配置文件");
-            DisplayValidationItem(validationResult.CheckAssemblyConfigs, "程序集配置");
-            DisplayValidationItem(validationResult.CheckAotLibraries, "AOT库文件");
+            DisplayValidationItem(_validationResult.CheckPackages, "包安装");
+            DisplayValidationItem(_validationResult.CheckDirectories, "目录结构");
+            DisplayValidationItem(_validationResult.CheckConfigFiles, "配置文件");
+            DisplayValidationItem(_validationResult.CheckAssemblyConfigs, "程序集配置");
+            DisplayValidationItem(_validationResult.CheckAotLibraries, "AOT库文件");
             
             EditorGUILayout.EndScrollView();
             

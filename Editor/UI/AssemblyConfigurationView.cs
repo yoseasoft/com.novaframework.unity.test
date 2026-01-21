@@ -34,8 +34,8 @@ namespace CoreEngine.Editor.Installer
     public class AssemblyConfigurationView
     {
         // 程序集配置相关
-        private List<AssemblyDefinitionConfig> assemblyConfigs;
-        private Vector2 assemblyScrollPos;
+        private List<AssemblyDefinitionConfig> _assemblyConfigs;
+        private Vector2 _assemblyScrollPos;
 
         public AssemblyConfigurationView()
         {
@@ -45,7 +45,7 @@ namespace CoreEngine.Editor.Installer
         public void DrawView()
         {
             // 对程序集配置按order排序
-            assemblyConfigs.Sort((x, y) => x.order.CompareTo(y.order));
+            _assemblyConfigs.Sort((x, y) => x.order.CompareTo(y.order));
             
             // 增大帮助文本的字体
             GUIStyle helpStyle = new GUIStyle(EditorStyles.helpBox);
@@ -59,9 +59,9 @@ namespace CoreEngine.Editor.Installer
             
             // 使用固定高度而不是最大高度，确保为底部按钮预留空间
             float availableHeight = Mathf.Max(300, Screen.height * 0.6f); // 使用屏幕高度的60%，但最少300像素
-            assemblyScrollPos = EditorGUILayout.BeginScrollView(assemblyScrollPos, GUILayout.Height(availableHeight));
+            _assemblyScrollPos = EditorGUILayout.BeginScrollView(_assemblyScrollPos, GUILayout.Height(availableHeight));
             
-            for (int i = 0; i < assemblyConfigs.Count; i++)
+            for (int i = 0; i < _assemblyConfigs.Count; i++)
             {
                 DrawAssemblyItem(i);
                 EditorGUILayout.Space(5);
@@ -82,10 +82,10 @@ namespace CoreEngine.Editor.Installer
                 var newConfig = new AssemblyDefinitionConfig
                 {
                     name = "New.Assembly",
-                    order = assemblyConfigs.Count + 1,
+                    order = _assemblyConfigs.Count + 1,
                     tagNames = new List<string> { "Module" }
                 };
-                assemblyConfigs.Add(newConfig);
+                _assemblyConfigs.Add(newConfig);
             }
             
             // 添加按钮间的间距
@@ -103,9 +103,9 @@ namespace CoreEngine.Editor.Installer
         
         void DrawAssemblyItem(int index)
         {
-            if (index >= assemblyConfigs.Count) return;
+            if (index >= _assemblyConfigs.Count) return;
             
-            var config = assemblyConfigs[index];
+            var config = _assemblyConfigs[index];
             
             EditorGUILayout.BeginVertical("box");
             
@@ -133,7 +133,7 @@ namespace CoreEngine.Editor.Installer
             {
                 if (GUILayout.Button("移除", GUILayout.Width(60)))
                 {
-                    assemblyConfigs.RemoveAt(index);
+                    _assemblyConfigs.RemoveAt(index);
                     GUIUtility.ExitGUI(); // 退出GUI以防止索引错误
                     return;
                 }
@@ -182,14 +182,8 @@ namespace CoreEngine.Editor.Installer
         
         void SaveAssemblyConfiguration()
         {
-            // 转换标签为位标志枚举值
-            foreach (var config in assemblyConfigs)
-            {
-                // 从字符串列表转换为整数值
-                config.tagMask = ConvertTagsToBitmask(config.tagNames);
-            }
-            
-            DataManager.SaveAssemblyConfig(assemblyConfigs);
+        
+            DataManager.SaveAssemblyConfig(_assemblyConfigs);
             EditorUtility.DisplayDialog("保存成功", "程序集配置已保存到 " + DataManager.AssemblyConfigPath, "确定");
         }
         
@@ -248,7 +242,7 @@ namespace CoreEngine.Editor.Installer
         public void RefreshData()
         {
             // 从数据管理器加载现有的程序集配置
-            assemblyConfigs = DataManager.LoadAssemblyConfig();
+            _assemblyConfigs = DataManager.LoadAssemblyConfig();
             
             // 从FrameworkSetting中获取当前选中的包
             var frameworkSetting = DataManager.LoadFrameworkSetting();
@@ -261,7 +255,7 @@ namespace CoreEngine.Editor.Installer
                     !string.IsNullOrEmpty(selectedPackage.assemblyDefinitionInfo.name))
                 {
                     // 检查是否已存在此程序集配置
-                    var existingConfig = assemblyConfigs.Find(c => c.name == selectedPackage.assemblyDefinitionInfo.name);
+                    var existingConfig = _assemblyConfigs.Find(c => c.name == selectedPackage.assemblyDefinitionInfo.name);
                     if (existingConfig == null)
                     {
                         // 如果不存在，添加新的配置（使用包中的默认值）
@@ -279,8 +273,7 @@ namespace CoreEngine.Editor.Installer
                                 newConfig.tagNames[i] = "Module";
                             }
                         }
-                        newConfig.tagMask = ConvertTagsToBitmask(newConfig.tagNames);
-                        assemblyConfigs.Add(newConfig);
+                        _assemblyConfigs.Add(newConfig);
                     }
                     // 注意：这里不再更新已存在的配置，保持用户之前保存的设置
                 }
@@ -302,17 +295,16 @@ namespace CoreEngine.Editor.Installer
             
             foreach (var coreAssembly in coreAssemblies)
             {
-                var existingConfig = assemblyConfigs.Find(c => c.name == coreAssembly.name);
+                var existingConfig = _assemblyConfigs.Find(c => c.name == coreAssembly.name);
                 if (existingConfig == null)
                 {
                     var newConfig = new AssemblyDefinitionConfig
                     {
                         name = coreAssembly.name,
                         order = coreAssembly.order,
-                        tagMask = coreAssembly.tagMask,
                         tagNames = ConvertBitmaskToTags(coreAssembly.tagMask)
                     };
-                    assemblyConfigs.Add(newConfig);
+                    _assemblyConfigs.Add(newConfig);
                 }
             }
         }

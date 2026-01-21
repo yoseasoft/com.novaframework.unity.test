@@ -30,16 +30,16 @@ namespace CoreEngine.Editor.Installer
 {
     public class MainInstallWindow : EditorWindow
     {
-        private static MainInstallWindow window;
-        private bool isInstalling = false;
-        private AutoInstallManager.InstallProgress currentProgress;
+        private static MainInstallWindow _window;
+        private bool _isInstalling = false;
+        private AutoInstallManager.InstallProgress _currentProgress;
         
         public static void ShowWindow()
         {
-            window = (MainInstallWindow)EditorWindow.GetWindow(typeof(MainInstallWindow));
-            window.titleContent = new GUIContent("自动安装");
-            window.minSize = new Vector2(500, 300);
-            window.Show();
+            _window = (MainInstallWindow)EditorWindow.GetWindow(typeof(MainInstallWindow));
+            _window.titleContent = new GUIContent("自动安装");
+            _window.minSize = new Vector2(500, 300);
+            _window.Show();
         }
         
         void OnGUI()
@@ -47,7 +47,7 @@ namespace CoreEngine.Editor.Installer
             GUILayout.Label("框架自动安装", new GUIStyle(EditorStyles.boldLabel) { fontSize = 16 });
             EditorGUILayout.Space(20);
             
-            if (!isInstalling)
+            if (!_isInstalling)
             {
                 GUILayout.Label("点击下面的按钮开始自动安装框架：", EditorStyles.wordWrappedLabel);
                 EditorGUILayout.Space(10);
@@ -60,37 +60,37 @@ namespace CoreEngine.Editor.Installer
             else
             {
                 // 显示安装进度
-                if (currentProgress != null)
+                if (_currentProgress != null)
                 {
-                    GUILayout.Label(currentProgress.CurrentStep, EditorStyles.boldLabel);
+                    GUILayout.Label(_currentProgress.CurrentStep, EditorStyles.boldLabel);
                     EditorGUILayout.Space(5);
                     
-                    GUILayout.Label(currentProgress.StatusMessage, EditorStyles.wordWrappedLabel);
+                    GUILayout.Label(_currentProgress.StatusMessage, EditorStyles.wordWrappedLabel);
                     EditorGUILayout.Space(10);
                     
                     // 进度条
                     Rect progressRect = EditorGUILayout.GetControlRect();
                     progressRect.height = 20;
-                    EditorGUI.ProgressBar(progressRect, currentProgress.Progress, 
-                        $"{Mathf.RoundToInt(currentProgress.Progress * 100)}%");
+                    EditorGUI.ProgressBar(progressRect, _currentProgress.Progress, 
+                        $"{Mathf.RoundToInt(_currentProgress.Progress * 100)}%");
                     
                     EditorGUILayout.Space(10);
                     
-                    if (currentProgress.IsCompleted)
+                    if (_currentProgress.IsCompleted)
                     {
                         GUILayout.Label("安装完成！", EditorStyles.boldLabel);
                         if (GUILayout.Button("关闭", GUILayout.Height(30)))
                         {
-                            isInstalling = false;
-                            currentProgress = null;
+                            _isInstalling = false;
+                            _currentProgress = null;
                         }
                     }
                     else
                     {
                         if (GUILayout.Button("取消安装", GUILayout.Height(30)))
                         {
-                            isInstalling = false;
-                            currentProgress = null;
+                            _isInstalling = false;
+                            _currentProgress = null;
                         }
                     }
                 }
@@ -104,8 +104,8 @@ namespace CoreEngine.Editor.Installer
         
         void StartAutoInstall()
         {
-            isInstalling = true;
-            currentProgress = null;
+            _isInstalling = true;
+            _currentProgress = null;
             
             // 在后台线程中执行安装
             EditorApplication.delayCall += () =>
@@ -116,7 +116,7 @@ namespace CoreEngine.Editor.Installer
         
         void UpdateProgress(AutoInstallManager.InstallProgress progress)
         {
-            currentProgress = progress;
+            _currentProgress = progress;
             
             // 在主线程中更新UI
             EditorApplication.delayCall += () =>
@@ -125,7 +125,7 @@ namespace CoreEngine.Editor.Installer
                 
                 if (progress.IsCompleted)
                 {
-                    isInstalling = false;
+                    _isInstalling = false;
                 }
             };
         }

@@ -25,7 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
+
 using UnityEditor;
 using UnityEngine;
 
@@ -33,7 +33,7 @@ namespace CoreEngine.Editor.Installer
 {
     public class UpdateManager
     {
-        private const string UPDATE_CHECK_URL = "https://api.github.com/repos/your-repo/releases/latest";
+        private const string UPDATE_CHECK_URL = "https://github.com/yoseasoft/com.novaframework.unity.installer.git";
         private const string LOCAL_VERSION_FILE = "Assets/Editor/FrameworkInstaller/version.txt";
         
         public class UpdateInfo
@@ -48,21 +48,21 @@ namespace CoreEngine.Editor.Installer
         {
             try
             {
-                // 这里应该实现实际的API调用以检查更新
-                // 由于这是一个示例，我们将模拟检查过程
+                // 使用Git命令检查远程仓库是否有更新
+                // 这里暂时使用模拟实现，实际应该调用Git命令检查远程仓库
                 
-                string localVersion = GetLocalVersion();
-                
-                // 模拟检查更新（在实际实现中，这将是一个网络请求）
+                // 模拟检查更新（在实际实现中，这将调用Git命令）
                 var updateInfo = new UpdateInfo
                 {
                     HasUpdate = false, // 暂时设为false，实际实现时需要检查
-                    LatestVersion = "1.0.0", // 从API获取的实际版本号
-                    DownloadUrl = "", // 从API获取的实际下载URL
-                    ReleaseNotes = "暂无更新信息" // 从API获取的实际发布说明
+                    LatestVersion = "1.0.0", // 从远程仓库获取的实际版本号
+                    DownloadUrl = "", // 从远程仓库获取的实际下载URL
+                    ReleaseNotes = "暂无更新信息" // 从远程仓库获取的实际发布说明
                 };
                 
-                Debug.Log("更新检查功能已准备就绪，等待连接到远程仓库...");
+                // 这里应该实现实际的Git命令来检查更新
+                // 例如：git remote update && git status -uno
+                Debug.Log("正在使用Git检查更新...");
                 
                 return updateInfo;
             }

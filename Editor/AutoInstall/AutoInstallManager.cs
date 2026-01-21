@@ -28,6 +28,8 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEditor.PackageManager;
 using UnityEditor.SceneManagement;
 
 namespace CoreEngine.Editor.Installer
@@ -371,8 +373,17 @@ namespace CoreEngine.Editor.Installer
                     Debug.Log($"创建Sources目录: {sourcesPath}");
                 }
                 Debug.Log("开始解压UI包到Sources目录...");
-                BuildFrameworkInstaller.ExtractZipFile("Assets/Editor/FrameworkInstaller/BasePack/UI.zip", sourcesPath);
-                Debug.Log("UI包解压完成");
+                // 尝试多种可能的路径来查找UI.zip
+                string uiZipPath = FindUIZipFile();
+                if (!string.IsNullOrEmpty(uiZipPath))
+                {
+                    ZipHelper.ExtractZipFile(uiZipPath, sourcesPath);
+                    Debug.Log("UI包解压完成");
+                }
+                else
+                {
+                    Debug.LogWarning("未找到UI.zip文件，跳过基础包解压步骤");
+                }
                 
                 progressCallback?.Invoke(new InstallProgress 
                 { 
@@ -381,7 +392,7 @@ namespace CoreEngine.Editor.Installer
                     StatusMessage = "已解压UI包到Sources目录" 
                 });
                 
-                // 2. 复制主场景到Scenes目录
+                // 2. 创建主场景到Scenes目录
                 string scenesDir = Path.Combine(Application.dataPath, "Scenes");
                 if (!Directory.Exists(scenesDir))
                 {
@@ -389,18 +400,15 @@ namespace CoreEngine.Editor.Installer
                     Debug.Log($"创建Scenes目录: {scenesDir}");
                 }
                 
-                string sourceScenePath = "Assets/Editor/FrameworkInstaller/Scenes/main.unity";
                 string destScenePath = Path.Combine(scenesDir, "main.unity");
                 
-                if (File.Exists(sourceScenePath))
-                {
-                    File.Copy(sourceScenePath, destScenePath, true);
-                    Debug.Log("成功复制主场景到Scenes目录");
-                }
-                else
-                {
-                    Debug.LogWarning($"源场景文件不存在: {sourceScenePath}");
-                }
+                // 使用Unity API创建一个新的空场景
+                Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                
+                // 保存新创建的场景到目标路径
+                EditorSceneManager.SaveScene(newScene, destScenePath);
+                
+                Debug.Log("成功创建并保存空主场景到Scenes目录");
                 
                 progressCallback?.Invoke(new InstallProgress 
                 { 
@@ -470,6 +478,21 @@ namespace CoreEngine.Editor.Installer
                     IsCompleted = true
                 });
             }
+        }
+        
+        // 新增方法：查找Game.zip文件
+        public static string FindUIZipFile()
+        {
+            string path = Constants.GAME_ZIP_PATH;
+            
+            if (File.Exists(path))
+            {
+                Debug.Log($"找到Game.zip文件: {path}");
+                return path;
+            }
+           
+            Debug.LogWarning("在任何可能的路径中都未找到Game.zip文件");
+            return null;
         }
         
         private static void GenerateNovaFrameworkConfig(ProgressCallback progressCallback)
@@ -612,7 +635,7 @@ namespace CoreEngine.Editor.Installer
         {
             try
             {
-                string configsPath = Path.Combine(Application.dataPath, "Editor/FrameworkInstaller/Configs");
+                string configsPath = Path.Combine(Constants.DEFAULT_RESOURCES_ROOT_PATH, "Config");
                 string resourcesPath = Path.Combine(Application.dataPath, "Resources");
                 
                 if (!Directory.Exists(configsPath))

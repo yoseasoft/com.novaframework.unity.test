@@ -31,12 +31,12 @@ namespace CoreEngine.Editor.Installer
 {
     public class PackageConfigurationView
     {
-        private Vector2 scrollPosition;
-        private Vector2 selectedPackagesScrollPosition;
-        private string packageSearchFilter = ""; // 搜索过滤条件
+        private Vector2 _scrollPosition;
+        private Vector2 _selectedPackagesScrollPosition;
+        private string _packageSearchFilter = ""; // 搜索过滤条件
         
         // 跟踪每个包的详情展开状态
-        private Dictionary<string, bool> packageDetailsVisibility = new Dictionary<string, bool>();
+        private Dictionary<string, bool> _packageDetailsVisibility = new Dictionary<string, bool>();
         
         public void DrawView()
         {
@@ -65,16 +65,16 @@ namespace CoreEngine.Editor.Installer
             EditorGUILayout.BeginHorizontal();
             GUILayout.Label("<color=#2196F3> 搜索包</color>", RichTextUtils.GetRichTextStyle(Color.white, 14), GUILayout.Width(60));
             int searchBoxWidth = Math.Max(100, (int)(Screen.width * 0.5 - 90)); // 使用屏幕宽度的50%
-            string newSearchFilter = EditorGUILayout.TextField(packageSearchFilter, GUILayout.Width(searchBoxWidth));
-            if (newSearchFilter != packageSearchFilter)
+            string newSearchFilter = EditorGUILayout.TextField(_packageSearchFilter, GUILayout.Width(searchBoxWidth));
+            if (newSearchFilter != _packageSearchFilter)
             {
-                packageSearchFilter = newSearchFilter;
+                _packageSearchFilter = newSearchFilter;
             }
             
             GUIStyle clearButtonStyle = RichTextUtils.GetButtonTextOnlyStyle(Color.white);
             if (GUILayout.Button("清空", clearButtonStyle, GUILayout.Width(60)))
             {
-                packageSearchFilter = "";
+                _packageSearchFilter = "";
             }
             EditorGUILayout.EndHorizontal();
         }
@@ -86,10 +86,10 @@ namespace CoreEngine.Editor.Installer
             GUILayout.Label("<color=#FF9800>  所有包</color>", RichTextUtils.GetBoldRichTextStyle(Color.white, 14));
             
             // 滚动视图以容纳可能的大量包
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Height(470)); // 增加回50的高度（从420增加到470）
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(470)); // 增加回50的高度（从420增加到470）
             
             // 获取过滤后的包列表
-            var filteredPackages = PackageManager.GetFilteredPackages(packageSearchFilter);
+            var filteredPackages = PackageManager.GetFilteredPackages(_packageSearchFilter);
             
             foreach (var package in filteredPackages)
             {
@@ -130,8 +130,8 @@ namespace CoreEngine.Editor.Installer
                 }
                 
                 // 添加小三角箭头按钮来切换详情显示/隐藏
-                string toggleContent = packageDetailsVisibility.ContainsKey(package.name) && 
-                                      packageDetailsVisibility[package.name] ? "▼" : "▶"; // 显示/隐藏箭头
+                string toggleContent = _packageDetailsVisibility.ContainsKey(package.name) && 
+                                      _packageDetailsVisibility[package.name] ? "▼" : "▶"; // 显示/隐藏箭头
                 if (GUILayout.Button(toggleContent, EditorStyles.label, GUILayout.Width(20), GUILayout.Height(20)))
                 {
                     // 切换详情显示状态
@@ -141,8 +141,8 @@ namespace CoreEngine.Editor.Installer
                 EditorGUILayout.EndHorizontal();
                 
                 // 如果详情显示状态为true，则显示详细信息
-                if (packageDetailsVisibility.ContainsKey(package.name) && 
-                    packageDetailsVisibility[package.name])
+                if (_packageDetailsVisibility.ContainsKey(package.name) && 
+                    _packageDetailsVisibility[package.name])
                 {
                     // 将包的详细信息包装在一个垂直区域中
                     EditorGUILayout.BeginVertical("box"); // 使用box样式包围详细信息
@@ -221,6 +221,7 @@ namespace CoreEngine.Editor.Installer
             GUIStyle saveButtonStyle = RichTextUtils.GetButtonStyle(Color.white, new Color(0.2f, 0.6f, 0.2f, 1f)); // 绿色背景的保存按钮
             if (GUILayout.Button("保存选择", saveButtonStyle, GUILayout.Height(35)))
             {
+                Debug.Log("保存选择");
                 GitManager.SavePackage(PackageManager.GetSelectedPackages());
                 DataManager.SaveSelectPackage(PackageManager.GetSelectedPackages());
             }
@@ -228,6 +229,7 @@ namespace CoreEngine.Editor.Installer
             GUIStyle updateButtonStyle = RichTextUtils.GetButtonStyle(Color.black, new Color(1f, 0.92f, 0.24f, 1f)); // 黄色背景的更新按钮
             if (GUILayout.Button("一键更新所选包(Git)", updateButtonStyle, GUILayout.Height(35)))
             {
+                Debug.Log("一键更新所选包(Git)");
                 if (EditorUtility.DisplayDialog("确认更新", 
                     "确定要更新所有选中的包吗？此操作将会从Git仓库拉取最新版本。", 
                     "确定", "取消"))
@@ -338,7 +340,7 @@ namespace CoreEngine.Editor.Installer
             }
             
             // 滚动视图以容纳可能的大量已选包
-            selectedPackagesScrollPosition = EditorGUILayout.BeginScrollView(selectedPackagesScrollPosition, GUILayout.Height(470)); // 增加回50的高度（从420增加到470）
+            _selectedPackagesScrollPosition = EditorGUILayout.BeginScrollView(_selectedPackagesScrollPosition, GUILayout.Height(470)); // 增加回50的高度（从420增加到470）
             
             foreach (var package in selectedPackages)
             {
@@ -377,13 +379,13 @@ namespace CoreEngine.Editor.Installer
         /// <param name="packageName">包名</param>
         public void TogglePackageDetailVisibility(string packageName)
         {
-            if (packageDetailsVisibility.ContainsKey(packageName))
+            if (_packageDetailsVisibility.ContainsKey(packageName))
             {
-                packageDetailsVisibility[packageName] = !packageDetailsVisibility[packageName];
+                _packageDetailsVisibility[packageName] = !_packageDetailsVisibility[packageName];
             }
             else
             {
-                packageDetailsVisibility[packageName] = true; // 默认展开
+                _packageDetailsVisibility[packageName] = true; // 默认展开
             }
         }
     }
