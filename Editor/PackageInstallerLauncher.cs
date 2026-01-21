@@ -175,13 +175,12 @@ public class PackageInstallerLauncher
     {
         try
         {
+            // 使用 PackageManager 移除自身
+            Client.Remove(_launcherPackageName);
             if (File.Exists(_markerPath))
             {
                 File.Delete(_markerPath);
             }
-            
-            // 使用 PackageManager 移除自身
-            Client.Remove(_launcherPackageName);
             Debug.Log($"Successfully removed self: {_launcherPackageName}");
         }
         catch (Exception e)
