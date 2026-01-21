@@ -1,13 +1,24 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.PackageManager;
-using System.Collections.Generic;
+using UnityEngine;
 
-public class PackageInstaller : MonoBehaviour
+public class PackageInstallerLauncher
 {
+    private static readonly Dictionary<string, string> _gitUrlDic = new Dictionary<string, string>()
+    {
+        {
+            "com.novaframework.unity.core.common",
+            "https://github.com/yoseasoft/com.novaframework.unity.core.common.git"
+        },
+        {
+            "com.novaframework.unity.installer",
+            "https://github.com/yoseasoft/com.novaframework.unity.installer.git"
+        },
+    };
+    
     [InitializeOnLoadMethod]
     static void OnProjectLoadedInEditor()
     {
@@ -31,7 +42,7 @@ public class PackageInstaller : MonoBehaviour
     {
         try
         {
-            // 创建目录结构
+            //创建目录结构
             string projectPath = Path.GetDirectoryName(Application.dataPath);
             string novaFrameworkDataPath = Path.Combine(projectPath, "NovaFrameworkData");
             string frameworkRepoPath = Path.Combine(novaFrameworkDataPath, "framework_repo");
@@ -48,12 +59,13 @@ public class PackageInstaller : MonoBehaviour
                 Debug.Log($"Created directory: {frameworkRepoPath}");
             }
 
-            // 使用硬编码的 Git URL
-            string gitUrl = "https://github.com/yoseasoft/com.novaframework.unity.installer.git";
-            Debug.Log($"Using Git URL: {gitUrl}");
-
-            // 下载第二个包
-            DownloadPackageFromGit(gitUrl, frameworkRepoPath);
+            foreach (var gitVar in _gitUrlDic)
+            {
+                DownloadPackageFromGit(gitVar.Key, gitVar.Value, frameworkRepoPath);
+            }
+            
+            // 等待一会儿再移除自身，确保所有操作完成
+            EditorApplication.delayCall += RemoveSelf;
         }
         catch (Exception e)
         {
@@ -61,7 +73,7 @@ public class PackageInstaller : MonoBehaviour
         }
     }
 
-    static void DownloadPackageFromGit(string gitUrl, string targetPath)
+    static void DownloadPackageFromGit(string packageName, string gitUrl, string targetPath)
     {
         try
         {
@@ -90,10 +102,7 @@ public class PackageInstaller : MonoBehaviour
                     Debug.Log($"Successfully downloaded package from {gitUrl}");
                     
                     // 修改 manifest.json
-                    ModifyManifestJson();
-                    
-                    // 等待一会儿再移除自身，确保所有操作完成
-                    EditorApplication.delayCall += RemoveSelf;
+                    ModifyManifestJson(packageName);
                 }
                 else
                 {
@@ -108,7 +117,7 @@ public class PackageInstaller : MonoBehaviour
         }
     }
 
-    static void ModifyManifestJson()
+    static void ModifyManifestJson(string packageName)
     {
         try
         {
@@ -132,7 +141,7 @@ public class PackageInstaller : MonoBehaviour
                 if (openingBrace != -1)
                 {
                     // 检查是否已存在相同的依赖项，避免重复添加
-                    if (jsonContent.Substring(dependenciesStart, openingBrace - dependenciesStart + 200).Contains("com.novaframework.unity.installer"))
+                    if (jsonContent.Substring(dependenciesStart, openingBrace - dependenciesStart + 200).Contains(packageName))
                     {
                         Debug.Log("Package dependency already exists in manifest.json");
                         return;
@@ -140,8 +149,8 @@ public class PackageInstaller : MonoBehaviour
                     
                     int insertPosition = jsonContent.IndexOf('\n', openingBrace + 1);
                     if (insertPosition == -1) insertPosition = openingBrace + 1;
-                    
-                    string newEntry = "    \"com.novaframework.unity.installer\": \"file:./../NovaFrameworkData/framework_repo/com.novaframework.unity.installer\",\n";
+
+                    string newEntry = $"    \"{packageName}\": \"file:./../NovaFrameworkData/framework_repo/{packageName}\"\n";
                     string updatedJson = jsonContent.Insert(insertPosition, newEntry);
                     
                     File.WriteAllText(manifestPath, updatedJson);

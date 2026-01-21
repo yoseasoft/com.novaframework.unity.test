@@ -1,1 +1,0 @@
-https://github.com/yoseasoft/com.novaframework.unity.installer.git
