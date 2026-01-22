@@ -178,11 +178,14 @@ public class PackageInstallerLauncher
         {
             // 使用 PackageManager 移除自身
             Client.Remove(_launcherPackageName);
-            if (File.Exists(_markerPath))
+            
+            string markerDir = Path.GetDirectoryName(_markerPath);
+            if (Directory.Exists(markerDir))
             {
-                File.Delete(_markerPath);
-                File.Delete(_markerPath + ".meta");
+                Directory.Delete(markerDir, true);
+                File.Delete(markerDir + ".meta");
             }
+            
             Debug.Log($"Successfully removed self: {_launcherPackageName}");
         }
         catch (Exception e)
