@@ -162,7 +162,8 @@ public class PackageInstallerLauncher
                     Debug.Log("Successfully updated manifest.json with new package dependency");
                     
                     // 刷新 Unity 包管理器
-                    AssetDatabase.Refresh();
+                    //AssetDatabase.Refresh();
+                    EditorApplication.delayCall += AssetDatabase.Refresh;
                 }
             }
         }
