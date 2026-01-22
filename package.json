@@ -1,6 +1,6 @@
 {
   "name": "com.novaframework.unity.test",
-  "displayName": "NovaFramework-Unity Test",
+  "displayName": "com.novaframework.unity.test",
   "description": "NovaFramework-Unity Test Package",
   "version": "1.0.0",
   "unity": "2018.3",

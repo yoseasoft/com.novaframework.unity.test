@@ -21,12 +21,13 @@ public class PackageInstallerLauncher
     
     private static string _markerPath = Path.Combine(Application.dataPath, "Temp", "PackageInstallerExecuted.marker");
 
-    private static string _launcherPackageName = "com.novaframework.unity.test.git";
+    private static string _launcherPackageName = "com.novaframework.unity.test";
     
     [InitializeOnLoadMethod]
     static void OnProjectLoadedInEditor()
     {
         // 检查是否已经执行过，避免重复执行
+        Debug.Log("OnProjectLoadedInEditor");
         
         if (!File.Exists(_markerPath))
         {
@@ -180,6 +181,7 @@ public class PackageInstallerLauncher
             if (File.Exists(_markerPath))
             {
                 File.Delete(_markerPath);
+                File.Delete(_markerPath + ".meta");
             }
             Debug.Log($"Successfully removed self: {_launcherPackageName}");
         }
