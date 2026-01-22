@@ -18,30 +18,8 @@ public class PackageInstallerLauncher
             "https://github.com/yoseasoft/com.novaframework.unity.installer.git"
         },
     };
-    
-    //private static string _markerPath = Path.Combine(Application.dataPath, "Temp", "PackageInstallerExecuted.marker");
 
     private static string _launcherPackageName = "com.novaframework.unity.test";
-    
-    // [InitializeOnLoadMethod]
-    // static void OnProjectLoadedInEditor()
-    // {
-    //     // 检查是否已经执行过，避免重复执行
-    //     Debug.Log("OnProjectLoadedInEditor");
-    //     
-    //     if (!File.Exists(_markerPath))
-    //     {
-    //         // 确保 Temp 目录存在
-    //         string tempDir = Path.Combine(Application.dataPath, "Temp");
-    //         if (!Directory.Exists(tempDir))
-    //         {
-    //             Directory.CreateDirectory(tempDir);
-    //         }
-    //         
-    //         File.WriteAllText(_markerPath, "executed");
-    //         EditorApplication.delayCall += ExecuteInstallation;
-    //     }
-    // }
 
     [InitializeOnLoadMethod]
     static void ExecuteInstallation()
@@ -182,14 +160,6 @@ public class PackageInstallerLauncher
         {
             // 使用 PackageManager 移除自身
             Client.Remove(_launcherPackageName);
-            
-            // string markerDir = Path.GetDirectoryName(_markerPath);
-            // if (Directory.Exists(markerDir))
-            // {
-            //     Directory.Delete(markerDir, true);
-            //     File.Delete(markerDir + ".meta");
-            // }
-            
             Debug.Log($"Successfully removed self: {_launcherPackageName}");
         }
         catch (Exception e)
