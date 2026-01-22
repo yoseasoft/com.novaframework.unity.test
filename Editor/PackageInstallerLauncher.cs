@@ -70,7 +70,7 @@ public class PackageInstallerLauncher
             }
             
             // 等待一会儿再移除自身，确保所有操作完成
-            EditorApplication.delayCall += RemoveSelf;
+            RemoveSelf();
         }
         catch (Exception e)
         {
